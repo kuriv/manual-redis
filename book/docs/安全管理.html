@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>集合操作 · Redis</title>
+        <title>安全管理 · Redis</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -74,10 +74,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="有序集合操作.html" />
+    <link rel="next" href="配置文件.html" />
     
     
-    <link rel="prev" href="列表操作.html" />
+    <link rel="prev" href="流操作.html" />
     
 
     
@@ -215,7 +215,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.1.7" data-path="集合操作.html">
+        <li class="chapter " data-level="1.1.7" data-path="集合操作.html">
             
                 <a href="集合操作.html">
             
@@ -306,7 +306,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.14" data-path="安全管理.html">
+        <li class="chapter active" data-level="1.1.14" data-path="安全管理.html">
             
                 <a href="安全管理.html">
             
@@ -419,7 +419,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >集合操作</a>
+        <a href=".." >安全管理</a>
     </h1>
 </div>
 
@@ -434,27 +434,80 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x96C6;&#x5408;&#x64CD;&#x4F5C;">&#x96C6;&#x5408;&#x64CD;&#x4F5C;</h1>
-<p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5C06;&#x4E00;&#x4E2A;&#x6216;&#x591A;&#x4E2A;&#x5143;&#x7D20;&#x6DFB;&#x52A0;&#x5230;&#x6307;&#x5B9A;&#x96C6;&#x5408;&#x4E2D;&#x3002;</p>
-<pre class="language-"><code>SADD set foo bar baz
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x83B7;&#x53D6;&#x6307;&#x5B9A;&#x96C6;&#x5408;&#x4E2D;&#x7684;&#x6240;&#x6709;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SMEMBERS set
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x83B7;&#x53D6;&#x6307;&#x5B9A;&#x96C6;&#x5408;&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x4E2A;&#x6570;&#x3002;</p>
-<pre class="language-"><code>SCARD set
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5224;&#x65AD;&#x6307;&#x5B9A;&#x7684;&#x5143;&#x7D20;&#x662F;&#x5426;&#x5B58;&#x5728;&#x4E8E;&#x96C6;&#x5408;&#x4E2D;&#x3002;</p>
-<pre class="language-"><code>SISMEMBER set foo
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5220;&#x9664;&#x96C6;&#x5408;&#x4E2D;&#x7684;&#x6307;&#x5B9A;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SREM set foo
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x4ECE;&#x6307;&#x5B9A;&#x96C6;&#x5408;&#x4E2D;&#x968F;&#x673A;&#x5220;&#x9664;&#x5E76;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SPOP set
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x4ECE;&#x6307;&#x5B9A;&#x96C6;&#x5408;&#x4E2D;&#x968F;&#x673A;&#x83B7;&#x53D6;&#x4E00;&#x4E2A;&#x6216;&#x591A;&#x4E2A;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SRANDMEMBER set 2
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x83B7;&#x53D6;&#x4E24;&#x4E2A;&#x96C6;&#x5408;&#x7684;&#x5E76;&#x96C6;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SUNION set1 set2
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x83B7;&#x53D6;&#x4E24;&#x4E2A;&#x96C6;&#x5408;&#x7684;&#x4EA4;&#x96C6;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SINTER set1 set2
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x83B7;&#x53D6;&#x4E24;&#x4E2A;&#x96C6;&#x5408;&#x7684;&#x5DEE;&#x96C6;&#x5143;&#x7D20;&#x3002;</p>
-<pre class="language-"><code>SDIFF set1 set2
+                                <h1 id="&#x5B89;&#x5168;&#x7BA1;&#x7406;">&#x5B89;&#x5168;&#x7BA1;&#x7406;</h1>
+<p>&#x5728; <code>/usr/local/etc/redis/</code> &#x76EE;&#x5F55;&#x4E0B;&#x65B0;&#x5EFA; <code>redis.conf</code> &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5982;&#x4E0B;&#x3002;</p>
+<pre class="language-"><code>################################## NETWORK #####################################
+
+# By default, if no &quot;bind&quot; configuration directive is specified, Redis listens
+# for connections from all available network interfaces on the host machine.
+# It is possible to listen to just one or multiple selected interfaces using
+# the &quot;bind&quot; configuration directive, followed by one or more IP addresses.
+# Each address can be prefixed by &quot;-&quot;, which means that redis will not fail to
+# start if the address is not available. Being not available only refers to
+# addresses that does not correspond to any network interface. Addresses that
+# are already in use will always fail, and unsupported protocols will always BE
+# silently skipped.
+#
+# Examples:
+#
+# bind 192.168.1.100 10.0.0.1     # listens on two specific IPv4 addresses
+# bind 127.0.0.1 ::1              # listens on loopback IPv4 and IPv6
+# bind * -::*                     # like the default, all available interfaces
+#
+# ~~~ WARNING ~~~ If the computer running Redis is directly exposed to the
+# internet, binding to all the interfaces is dangerous and will expose the
+# instance to everybody on the internet. So by default we uncomment the
+# following bind directive, that will force Redis to listen only on the
+# IPv4 and IPv6 (if available) loopback interface addresses (this means Redis
+# will only be able to accept client connections from the same host that it is
+# running on).
+#
+# IF YOU ARE SURE YOU WANT YOUR INSTANCE TO LISTEN TO ALL THE INTERFACES
+# COMMENT OUT THE FOLLOWING LINE.
+#
+# You will also need to set a password unless you explicitly disable protected
+# mode.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bind 0.0.0.0
+
+# Protected mode is a layer of security protection, in order to avoid that
+# Redis instances left open on the internet are accessed and exploited.
+#
+# When protected mode is on and the default user has no password, the server
+# only accepts local connections from the IPv4 address (127.0.0.1), IPv6 address
+# (::1) or Unix domain sockets.
+#
+# By default protected mode is enabled. You should disable it only if
+# you are sure you want clients from other hosts to connect to Redis
+# even if no authentication is configured.
+protected-mode yes
+
+# Accept connections on the specified port, default is 6379 (IANA #815344).
+# If port 0 is specified Redis will not listen on a TCP socket.
+port 6379
+
+################################## SECURITY ###################################
+
+# Warning: since Redis is pretty fast, an outside user can try up to
+# 1 million passwords per second against a modern box. This means that you
+# should use very strong passwords, otherwise they will be very easy to break.
+# Note that because the password is really a shared secret between the client
+# and the server, and should not be memorized by any human, the password
+# can be easily a long string from /dev/urandom or whatever, so by using a
+# long and unguessable password no brute force attack will be possible.
+
+# IMPORTANT NOTE: starting with Redis 6 &quot;requirepass&quot; is just a compatibility
+# layer on top of the new ACL system. The option effect will be just setting
+# the password for the default user. Clients will still authenticate using
+# AUTH <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span> as usually, or more explicitly with AUTH default <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span>
+# if they follow the new protocol: both will work.
+#
+# The requirepass is not compatible with aclfile option and the ACL LOAD
+# command, these will cause requirepass to be ignored.
+#
+requirepass foobared
+</code></pre><p>&#x4FDD;&#x5B58;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5E76;&#x91CD;&#x542F;&#x540E;&#xFF0C;&#x6240;&#x6709;&#x5BA2;&#x6237;&#x7AEF;&#x8FDE;&#x63A5;&#x5FC5;&#x987B;&#x8BA4;&#x8BC1;&#x5B89;&#x5168;&#x5BC6;&#x7801;&#x624D;&#x80FD;&#x8FDB;&#x884C;&#x64CD;&#x4F5C;&#xFF0C;&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#x3002;</p>
+<pre class="language-"><code>AUTH foobared
 </code></pre>
                                 
                                 </section>
@@ -482,12 +535,12 @@
 
             
                 
-                <a href="列表操作.html" class="navigation navigation-prev " aria-label="Previous page: 列表操作">
+                <a href="流操作.html" class="navigation navigation-prev " aria-label="Previous page: 流操作">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="有序集合操作.html" class="navigation navigation-next " aria-label="Next page: 有序集合操作">
+                <a href="配置文件.html" class="navigation navigation-next " aria-label="Next page: 配置文件">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -498,7 +551,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"集合操作","level":"1.1.7","depth":2,"next":{"title":"有序集合操作","level":"1.1.8","depth":2,"path":"docs/有序集合操作.md","ref":"docs/有序集合操作.md","articles":[]},"previous":{"title":"列表操作","level":"1.1.6","depth":2,"path":"docs/列表操作.md","ref":"docs/列表操作.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/集合操作.md","mtime":"2026-09-15T16:30:55.657Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-19T18:23:50.667Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"安全管理","level":"1.1.14","depth":2,"next":{"title":"配置文件","level":"1.1.15","depth":2,"path":"docs/配置文件.md","ref":"docs/配置文件.md","articles":[]},"previous":{"title":"流操作","level":"1.1.13","depth":2,"path":"docs/流操作.md","ref":"docs/流操作.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/安全管理.md","mtime":"2026-09-19T17:53:06.487Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-19T18:23:50.667Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
