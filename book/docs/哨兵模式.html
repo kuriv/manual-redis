@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>数据库操作 · Redis</title>
+        <title>哨兵模式 · Redis</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -74,10 +74,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="键操作.html" />
     
-    
-    <link rel="prev" href="客户端连接.html" />
+    <link rel="prev" href="主从复制.html" />
     
 
     
@@ -163,7 +161,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.1.3" data-path="数据库操作.html">
+        <li class="chapter " data-level="1.1.3" data-path="数据库操作.html">
             
                 <a href="数据库操作.html">
             
@@ -397,7 +395,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.21" data-path="哨兵模式.html">
+        <li class="chapter active" data-level="1.1.21" data-path="哨兵模式.html">
             
                 <a href="哨兵模式.html">
             
@@ -458,7 +456,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >数据库操作</a>
+        <a href=".." >哨兵模式</a>
     </h1>
 </div>
 
@@ -473,17 +471,143 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;">&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;</h1>
-<p>Redis &#x5185;&#x90E8;&#x9884;&#x7F6E; 16 &#x4E2A;&#x6570;&#x636E;&#x5E93;&#xFF08;&#x7F16;&#x53F7; 0 ~ 15 &#xFF09;&#xFF0C;&#x9ED8;&#x8BA4;&#x9009;&#x5B9A; db0 &#x3002;&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5207;&#x6362;&#x5230;&#x6307;&#x5B9A;&#x6570;&#x636E;&#x5E93;&#x3002;</p>
-<pre class="language-"><code>SELECT 1
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x6240;&#x5728;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x952E;&#x7684;&#x603B;&#x6570;&#x91CF;&#x3002;</p>
-<pre class="language-"><code>DBSIZE
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5F02;&#x6B65;&#x6E05;&#x7A7A;&#x5F53;&#x524D;&#x6240;&#x5728;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x7684;&#x952E;&#x3002;</p>
-<pre class="language-"><code>FLUSHDB ASYNC
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5F02;&#x6B65;&#x6E05;&#x7A7A;&#x5168;&#x90E8;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x7684;&#x952E;&#x3002;</p>
-<pre class="language-"><code>FLUSHALL ASYNC
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5C06;&#x6307;&#x5B9A;&#x7684;&#x952E;&#x79FB;&#x52A8;&#x5230;&#x5176;&#x4ED6;&#x6570;&#x636E;&#x5E93;&#x3002;</p>
-<pre class="language-"><code>MOVE string 1
+                                <h1 id="&#x54E8;&#x5175;&#x6A21;&#x5F0F;">&#x54E8;&#x5175;&#x6A21;&#x5F0F;</h1>
+<p>&#x54E8;&#x5175;&#x6A21;&#x5F0F;&#x662F;&#x5728;&#x4E3B;&#x4ECE;&#x590D;&#x5236;&#x7684;&#x57FA;&#x7840;&#x4E0A;&#x8FDB;&#x884C;&#x76D1;&#x63A7;&#xFF0C;&#x4FEE;&#x6539; <code>sentinel.conf</code> &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#x5982;&#x4E0B;&#x3002;</p>
+<pre class="language-"><code># By default protected mode is disabled in sentinel mode. Sentinel is reachable
+# from interfaces different than localhost. Make sure the sentinel instance is
+# protected from the outside world via firewalling or other means.
+protected-mode yes
+
+# dir <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>working-directory</span><span class="token punctuation">&gt;</span></span>
+# Every long running process should have a well-defined working directory.
+# For Redis Sentinel to chdir to /tmp at startup is the simplest thing
+# for the process to don&apos;t interfere with administrative tasks such as
+# unmounting filesystems.
+dir /tmp
+
+# sentinel monitor <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ip</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>redis-port</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>quorum</span><span class="token punctuation">&gt;</span></span>
+#
+# Tells Sentinel to monitor this master, and to consider it in O_DOWN
+# (Objectively Down) state only if at least <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>quorum</span><span class="token punctuation">&gt;</span></span> sentinels agree.
+#
+# Note that whatever is the ODOWN quorum, a Sentinel will require to
+# be elected by the majority of the known Sentinels in order to
+# start a failover, so no failover can be performed in minority.
+#
+# Replicas are auto-discovered, so you don&apos;t need to specify replicas in
+# any way. Sentinel itself will rewrite this configuration file adding
+# the replicas using additional configuration options.
+# Also note that the configuration file is rewritten when a
+# replica is promoted to master.
+#
+# Note: master name should not include special characters or spaces.
+# The valid charset is A-z 0-9 and the three characters &quot;.-_&quot;.
+sentinel monitor sentinel redis-master 6379 2
+
+# sentinel auth-pass <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span>
+#
+# Set the password to use to authenticate with the master and replicas.
+# Useful if there is a password set in the Redis instances to monitor.
+#
+# Note that the master password is also used for replicas, so it is not
+# possible to set a different password in masters and replicas instances
+# if you want to be able to monitor these instances with Sentinel.
+#
+# However you can have Redis instances without the authentication enabled
+# mixed with Redis instances requiring the authentication (as long as the
+# password set is the same for all the instances requiring the password) as
+# the AUTH command will have no effect in Redis instances with authentication
+# switched off.
+#
+# Example:
+#
+sentinel auth-pass sentinel foobared
+
+# sentinel down-after-milliseconds <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>milliseconds</span><span class="token punctuation">&gt;</span></span>
+#
+# Number of milliseconds the master (or any attached replica or sentinel) should
+# be unreachable (as in, not acceptable reply to PING, continuously, for the
+# specified period) in order to consider it in S_DOWN state (Subjectively
+# Down).
+#
+# Default is 30 seconds.
+sentinel down-after-milliseconds sentinel 30000
+
+requirepass foobared
+#
+# You can configure Sentinel itself to require a password, however when doing
+# so Sentinel will try to authenticate with the same password to all the
+# other Sentinels. So you need to configure all your Sentinels in a given
+# group with the same &quot;requirepass&quot; password. Check the following documentation
+# for more info: https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/
+#
+# IMPORTANT NOTE: starting with Redis 6.2 &quot;requirepass&quot; is a compatibility
+# layer on top of the ACL system. The option effect will be just setting
+# the password for the default user. Clients will still authenticate using
+# AUTH <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span> as usually, or more explicitly with AUTH default <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span>
+# if they follow the new protocol: both will work.
+#
+# New config files are advised to use separate authentication control for
+# incoming connections (via ACL), and for outgoing connections (via
+# sentinel-user and sentinel-pass)
+#
+# The requirepass is not compatible with aclfile option and the ACL LOAD
+# command, these will cause requirepass to be ignored.
+
+# sentinel failover-timeout <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>milliseconds</span><span class="token punctuation">&gt;</span></span>
+#
+# Specifies the failover timeout in milliseconds. It is used in many ways:
+#
+# - The time needed to re-start a failover after a previous failover was
+#   already tried against the same master by a given Sentinel, is two
+#   times the failover timeout.
+#
+# - The time needed for a replica replicating to a wrong master according
+#   to a Sentinel current configuration, to be forced to replicate
+#   with the right master, is exactly the failover timeout (counting since
+#   the moment a Sentinel detected the misconfiguration).
+#
+# - The time needed to cancel a failover that is already in progress but
+#   did not produced any configuration change (SLAVEOF NO ONE yet not
+#   acknowledged by the promoted replica).
+#
+# - The maximum time a failover in progress waits for all the replicas to be
+#   reconfigured as replicas of the new master. However even after this time
+#   the replicas will be reconfigured by the Sentinels anyway, but not with
+#   the exact parallel-syncs progression as specified.
+#
+# Default is 3 minutes.
+sentinel failover-timeout sentinel 180000
+
+# HOSTNAMES SUPPORT
+#
+# Normally Sentinel uses only IP addresses and requires SENTINEL MONITOR
+# to specify an IP address. Also, it requires the Redis replica-announce-ip
+# keyword to specify only IP addresses.
+#
+# You may enable hostnames support by enabling resolve-hostnames. Note
+# that you must make sure your DNS is configured properly and that DNS
+# resolution does not introduce very long delays.
+#
+SENTINEL resolve-hostnames yes
+
+# When resolve-hostnames is enabled, Sentinel still uses IP addresses
+# when exposing instances to users, configuration files, etc. If you want
+# to retain the hostnames when announced, enable announce-hostnames below.
+#
+SENTINEL announce-hostnames yes
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x65B9;&#x5F0F;&#x8FDE;&#x63A5; Redis &#x54E8;&#x5175;&#x670D;&#x52A1;&#x3002;</p>
+<pre class="language-"><code>redis-cli -p 26379
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x6240;&#x6709;&#x54E8;&#x5175;&#x8282;&#x70B9;&#x5217;&#x8868;&#x3002;</p>
+<pre class="language-"><code>SENTINEL SENTINELS sentinal
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x76D1;&#x63A7;&#x7684;&#x4E3B;&#x8282;&#x70B9;&#x8BE6;&#x60C5;&#x3002;</p>
+<pre class="language-"><code>SENTINEL MASTER sentinel
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x6240;&#x6709;&#x4ECE;&#x8282;&#x70B9;&#x5217;&#x8868;&#x3002;</p>
+<pre class="language-"><code>SENTINEL REPLICAS sentinal
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x68C0;&#x67E5;&#x54E8;&#x5175;&#x6CD5;&#x5B9A;&#x4EBA;&#x6570;&#x662F;&#x5426;&#x6EE1;&#x8DB3;&#x3002;</p>
+<pre class="language-"><code>SENTINEL CKQUORUM sentinel
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x624B;&#x52A8;&#x89E6;&#x53D1;&#x6545;&#x969C;&#x8F6C;&#x79FB;&#x3002;</p>
+<pre class="language-"><code>SENTINEL FAILOVER sentinel
 </code></pre>
                                 
                                 </section>
@@ -511,14 +635,10 @@
 
             
                 
-                <a href="客户端连接.html" class="navigation navigation-prev " aria-label="Previous page: 客户端连接">
+                <a href="主从复制.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 主从复制">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
-                
-                <a href="键操作.html" class="navigation navigation-next " aria-label="Next page: 键操作">
-                    <i class="fa fa-angle-right"></i>
-                </a>
                 
             
         
@@ -527,7 +647,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"数据库操作","level":"1.1.3","depth":2,"next":{"title":"键操作","level":"1.1.4","depth":2,"path":"docs/键操作.md","ref":"docs/键操作.md","articles":[]},"previous":{"title":"客户端连接","level":"1.1.2","depth":2,"path":"docs/客户端连接.md","ref":"docs/客户端连接.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/数据库操作.md","mtime":"2026-09-15T14:40:59.249Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-21T16:05:04.865Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"哨兵模式","level":"1.1.21","depth":2,"next":{"title":"[集群管理]","level":"1.1.22","depth":2,"ref":"","articles":[]},"previous":{"title":"主从复制","level":"1.1.20","depth":2,"path":"docs/主从复制.md","ref":"docs/主从复制.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/哨兵模式.md","mtime":"2026-09-21T17:14:47.272Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-21T16:05:04.865Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

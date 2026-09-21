@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>数据库操作 · Redis</title>
+        <title>主从复制 · Redis</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -74,10 +74,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="键操作.html" />
+    <link rel="next" href="哨兵模式.html" />
     
     
-    <link rel="prev" href="客户端连接.html" />
+    <link rel="prev" href="AOF.html" />
     
 
     
@@ -163,7 +163,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.1.3" data-path="数据库操作.html">
+        <li class="chapter " data-level="1.1.3" data-path="数据库操作.html">
             
                 <a href="数据库操作.html">
             
@@ -384,7 +384,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.20" data-path="主从复制.html">
+        <li class="chapter active" data-level="1.1.20" data-path="主从复制.html">
             
                 <a href="主从复制.html">
             
@@ -458,7 +458,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >数据库操作</a>
+        <a href=".." >主从复制</a>
     </h1>
 </div>
 
@@ -473,17 +473,55 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;">&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;</h1>
-<p>Redis &#x5185;&#x90E8;&#x9884;&#x7F6E; 16 &#x4E2A;&#x6570;&#x636E;&#x5E93;&#xFF08;&#x7F16;&#x53F7; 0 ~ 15 &#xFF09;&#xFF0C;&#x9ED8;&#x8BA4;&#x9009;&#x5B9A; db0 &#x3002;&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5207;&#x6362;&#x5230;&#x6307;&#x5B9A;&#x6570;&#x636E;&#x5E93;&#x3002;</p>
-<pre class="language-"><code>SELECT 1
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x6240;&#x5728;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x952E;&#x7684;&#x603B;&#x6570;&#x91CF;&#x3002;</p>
-<pre class="language-"><code>DBSIZE
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5F02;&#x6B65;&#x6E05;&#x7A7A;&#x5F53;&#x524D;&#x6240;&#x5728;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x7684;&#x952E;&#x3002;</p>
-<pre class="language-"><code>FLUSHDB ASYNC
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5F02;&#x6B65;&#x6E05;&#x7A7A;&#x5168;&#x90E8;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x7684;&#x952E;&#x3002;</p>
-<pre class="language-"><code>FLUSHALL ASYNC
-</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5C06;&#x6307;&#x5B9A;&#x7684;&#x952E;&#x79FB;&#x52A8;&#x5230;&#x5176;&#x4ED6;&#x6570;&#x636E;&#x5E93;&#x3002;</p>
-<pre class="language-"><code>MOVE string 1
+                                <h1 id="&#x4E3B;&#x4ECE;&#x590D;&#x5236;">&#x4E3B;&#x4ECE;&#x590D;&#x5236;</h1>
+<p>&#x4E3B;&#x8282;&#x70B9;&#x65E0;&#x9700;&#x4FEE;&#x6539;&#x4EFB;&#x4F55;&#x914D;&#x7F6E;&#xFF0C;&#x4EC5;&#x9700;&#x4FEE;&#x6539;&#x4ECE;&#x8282;&#x70B9;&#x7684; <code>redis.conf</code> &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#x5982;&#x4E0B;&#x3002;</p>
+<pre class="language-"><code>################################# REPLICATION #################################
+
+# Master-Replica replication. Use replicaof to make a Redis instance a copy of
+# another Redis server. A few things to understand ASAP about Redis replication.
+#
+#   +------------------+      +---------------+
+#   |      Master      | ---&gt; |    Replica    |
+#   | (receive writes) |      |  (exact copy) |
+#   +------------------+      +---------------+
+#
+# 1) Redis replication is asynchronous, but you can configure a master to
+#    stop accepting writes if it appears to be not connected with at least
+#    a given number of replicas.
+# 2) Redis replicas are able to perform a partial resynchronization with the
+#    master if the replication link is lost for a relatively small amount of
+#    time. You may want to configure the replication backlog size (see the next
+#    sections of this file) with a sensible value depending on your needs.
+# 3) Replication is automatic and does not need user intervention. After a
+#    network partition replicas automatically try to reconnect to masters
+#    and resynchronize with them.
+#
+replicaof redis-master 6379
+
+# If the master is password protected (using the &quot;requirepass&quot; configuration
+# directive below) it is possible to tell the replica to authenticate before
+# starting the replication synchronization process, otherwise the master will
+# refuse the replica request.
+#
+masterauth foobared
+
+# You can configure a replica instance to accept writes or not. Writing against
+# a replica instance may be useful to store some ephemeral data (because data
+# written on a replica will be easily deleted after resync with the master) but
+# may also cause problems if clients are writing to it because of a
+# misconfiguration.
+#
+# Since Redis 2.6 by default replicas are read-only.
+#
+# Note: read only replicas are not designed to be exposed to untrusted clients
+# on the internet. It&apos;s just a protection layer against misuse of the instance.
+# Still a read only replica exports by default all the administrative commands
+# such as CONFIG, DEBUG, and so forth. To a limited extent you can improve
+# security of read only replicas using &apos;rename-command&apos; to shadow all the
+# administrative / dangerous commands.
+replica-read-only yes
+</code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x4E3B;&#x4ECE;&#x590D;&#x5236;&#x72B6;&#x6001;&#x3002;</p>
+<pre class="language-"><code>INFO REPLICATION
 </code></pre>
                                 
                                 </section>
@@ -511,12 +549,12 @@
 
             
                 
-                <a href="客户端连接.html" class="navigation navigation-prev " aria-label="Previous page: 客户端连接">
+                <a href="AOF.html" class="navigation navigation-prev " aria-label="Previous page: AOF">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="键操作.html" class="navigation navigation-next " aria-label="Next page: 键操作">
+                <a href="哨兵模式.html" class="navigation navigation-next " aria-label="Next page: 哨兵模式">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -527,7 +565,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"数据库操作","level":"1.1.3","depth":2,"next":{"title":"键操作","level":"1.1.4","depth":2,"path":"docs/键操作.md","ref":"docs/键操作.md","articles":[]},"previous":{"title":"客户端连接","level":"1.1.2","depth":2,"path":"docs/客户端连接.md","ref":"docs/客户端连接.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/数据库操作.md","mtime":"2026-09-15T14:40:59.249Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-21T16:05:04.865Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"主从复制","level":"1.1.20","depth":2,"next":{"title":"哨兵模式","level":"1.1.21","depth":2,"path":"docs/哨兵模式.md","ref":"docs/哨兵模式.md","articles":[]},"previous":{"title":"AOF","level":"1.1.19","depth":2,"path":"docs/AOF.md","ref":"docs/AOF.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/主从复制.md","mtime":"2026-09-21T14:08:02.306Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-21T16:05:04.865Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
