@@ -74,6 +74,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
+    <link rel="next" href="无中心集群.html" />
+    
     
     <link rel="prev" href="主从复制.html" />
     
@@ -291,12 +293,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.13" data-path="安全管理.html">
+        <li class="chapter " data-level="1.1.13" data-path="安全保护.html">
             
-                <a href="安全管理.html">
+                <a href="安全保护.html">
             
                     
-                    安全管理
+                    安全保护
             
                 </a>
             
@@ -317,12 +319,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.15" data-path="性能排查.html">
+        <li class="chapter " data-level="1.1.15" data-path="性能测试.html">
             
-                <a href="性能排查.html">
+                <a href="性能测试.html">
             
                     
-                    性能排查
+                    性能测试
             
                 </a>
             
@@ -408,14 +410,14 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.22" >
+        <li class="chapter " data-level="1.1.22" data-path="无中心集群.html">
             
-                <span>
+                <a href="无中心集群.html">
             
                     
-                    [集群管理]
+                    无中心集群
             
-                </span>
+                </a>
             
 
             
@@ -502,7 +504,7 @@ dir /tmp
 #
 # Note: master name should not include special characters or spaces.
 # The valid charset is A-z 0-9 and the three characters &quot;.-_&quot;.
-sentinel monitor sentinel redis-master 6379 2
+sentinel monitor redis-sentinel redis-master 6379 2
 
 # sentinel auth-pass <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>password</span><span class="token punctuation">&gt;</span></span>
 #
@@ -521,7 +523,7 @@ sentinel monitor sentinel redis-master 6379 2
 #
 # Example:
 #
-sentinel auth-pass sentinel foobared
+sentinel auth-pass redis-sentinel foobared
 
 # sentinel down-after-milliseconds <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>master-name</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>milliseconds</span><span class="token punctuation">&gt;</span></span>
 #
@@ -531,7 +533,7 @@ sentinel auth-pass sentinel foobared
 # Down).
 #
 # Default is 30 seconds.
-sentinel down-after-milliseconds sentinel 30000
+sentinel down-after-milliseconds redis-sentinel 30000
 
 requirepass foobared
 #
@@ -577,7 +579,7 @@ requirepass foobared
 #   the exact parallel-syncs progression as specified.
 #
 # Default is 3 minutes.
-sentinel failover-timeout sentinel 180000
+sentinel failover-timeout redis-sentinel 180000
 
 # HOSTNAMES SUPPORT
 #
@@ -599,15 +601,32 @@ SENTINEL announce-hostnames yes
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x65B9;&#x5F0F;&#x8FDE;&#x63A5; Redis &#x54E8;&#x5175;&#x670D;&#x52A1;&#x3002;</p>
 <pre class="language-"><code>redis-cli -p 26379
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x6240;&#x6709;&#x54E8;&#x5175;&#x8282;&#x70B9;&#x5217;&#x8868;&#x3002;</p>
-<pre class="language-"><code>SENTINEL SENTINELS sentinal
+<pre class="language-"><code>SENTINEL SENTINELS redis-sentinel
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x76D1;&#x63A7;&#x7684;&#x4E3B;&#x8282;&#x70B9;&#x8BE6;&#x60C5;&#x3002;</p>
-<pre class="language-"><code>SENTINEL MASTER sentinel
+<pre class="language-"><code>SENTINEL MASTER redis-sentinel
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x67E5;&#x770B;&#x6240;&#x6709;&#x4ECE;&#x8282;&#x70B9;&#x5217;&#x8868;&#x3002;</p>
-<pre class="language-"><code>SENTINEL REPLICAS sentinal
+<pre class="language-"><code>SENTINEL REPLICAS redis-sentinel
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x68C0;&#x67E5;&#x54E8;&#x5175;&#x6CD5;&#x5B9A;&#x4EBA;&#x6570;&#x662F;&#x5426;&#x6EE1;&#x8DB3;&#x3002;</p>
-<pre class="language-"><code>SENTINEL CKQUORUM sentinel
+<pre class="language-"><code>SENTINEL CKQUORUM redis-sentinel
 </code></pre><p>&#x6267;&#x884C;&#x4E0B;&#x9762;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x624B;&#x52A8;&#x89E6;&#x53D1;&#x6545;&#x969C;&#x8F6C;&#x79FB;&#x3002;</p>
-<pre class="language-"><code>SENTINEL FAILOVER sentinel
+<pre class="language-"><code>SENTINEL FAILOVER redis-sentinel
+</code></pre><p>&#x5F53;&#x4E3B;&#x8282;&#x70B9;&#x5B95;&#x673A;&#x65F6;&#xFF0C;&#x54E8;&#x5175;&#x5C06;&#x9009;&#x62E9;&#x504F;&#x79FB;&#x503C;&#x6700;&#x5C0F;&#x7684;&#x8282;&#x70B9;&#x4F5C;&#x4E3A;&#x65B0;&#x7684;&#x4E3B;&#x8282;&#x70B9;&#xFF0C;&#x4FEE;&#x6539; <code>redis.conf</code> &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#x5982;&#x4E0B;&#x3002;</p>
+<pre class="language-"><code>################################# REPLICATION #################################
+
+# The replica priority is an integer number published by Redis in the INFO
+# output. It is used by Redis Sentinel in order to select a replica to promote
+# into a master if the master is no longer working correctly.
+#
+# A replica with a low priority number is considered better for promotion, so
+# for instance if there are three replicas with priority 10, 100, 25 Sentinel
+# will pick the one with priority 10, that is the lowest.
+#
+# However a special priority of 0 marks the replica as not able to perform the
+# role of master, so a replica with priority of 0 will never be selected by
+# Redis Sentinel for promotion.
+#
+# By default the priority is 100.
+replica-priority 100
 </code></pre>
                                 
                                 </section>
@@ -635,10 +654,14 @@ SENTINEL announce-hostnames yes
 
             
                 
-                <a href="主从复制.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 主从复制">
+                <a href="主从复制.html" class="navigation navigation-prev " aria-label="Previous page: 主从复制">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
+                
+                <a href="无中心集群.html" class="navigation navigation-next " aria-label="Next page: 无中心集群">
+                    <i class="fa fa-angle-right"></i>
+                </a>
                 
             
         
@@ -647,7 +670,7 @@ SENTINEL announce-hostnames yes
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"哨兵模式","level":"1.1.21","depth":2,"next":{"title":"[集群管理]","level":"1.1.22","depth":2,"ref":"","articles":[]},"previous":{"title":"主从复制","level":"1.1.20","depth":2,"path":"docs/主从复制.md","ref":"docs/主从复制.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/哨兵模式.md","mtime":"2026-09-21T17:14:47.272Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-21T16:05:04.865Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"哨兵模式","level":"1.1.21","depth":2,"next":{"title":"无中心集群","level":"1.1.22","depth":2,"path":"docs/无中心集群.md","ref":"docs/无中心集群.md","articles":[]},"previous":{"title":"主从复制","level":"1.1.20","depth":2,"path":"docs/主从复制.md","ref":"docs/主从复制.md","articles":[]},"dir":"ltr"},"config":{"plugins":["back-to-top-button","chapter-fold","favicon","hide-element","lightbox","-highlight","prism","-lunr","-search","search-pro","splitter","livereload"],"root":"","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"livereload":{},"splitter":{},"search-pro":{},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":{"shortcut":"favicon.ico","bookmark":"favicon.ico","appleTouch":"favicon.png","appleTouchMore":{"120x120":"favicon-120x120.png","180x180":"favicon-180x180.png"}},"lightbox":{"jquery":true,"sameUuid":false},"back-to-top-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Kuriv Vesti","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Redis","language":"zh-hans","gitbook":">=3.0.0","description":"Redis 手册","direction":"ltr"},"file":{"path":"docs/哨兵模式.md","mtime":"2026-09-22T15:47:20.127Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2026-09-22T16:16:08.504Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
